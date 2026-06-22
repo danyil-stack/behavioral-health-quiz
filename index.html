@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Extremely Advanced Behavioral Health Glossary Quiz</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #eef2f7;
+      color: #111827;
+      line-height: 1.5;
+    }
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 28px 18px 60px;
+    }
+    .hero, .progressBox, .question, .result, .categoryPanel {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+    .hero {
+      padding: 28px;
+      margin-bottom: 18px;
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 31px;
+      line-height: 1.15;
+    }
+    .sub {
+      margin: 0 0 12px;
+      color: #4b5563;
+      font-size: 16px;
+    }
+    .pillRow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #374151;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .progressBox {
+      padding: 18px;
+      margin-bottom: 18px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .progressText {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .bar {
+      height: 12px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+    }
+    .bar > div {
+      height: 100%;
+      width: 0%;
+      background: #111827;
+      transition: width 0.25s ease;
+    }
+    .question {
+      padding: 22px;
+      margin: 14px 0;
+    }
+    .questionHeader {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .num {
+      flex: 0 0 auto;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #111827;
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 14px;
+    }
+    .qBlock {
+      width: 100%;
+    }
+    .category {
+      display: inline-block;
+      font-size: 12px;
+      color: #4b5563;
+      background: #f3f4f6;
+      padding: 4px 8px;
+      border-radius: 999px;
+      margin-bottom: 6px;
+      font-weight: 800;
+    }
+    .qText {
+      font-size: 18px;
+      font-weight: 800;
+      margin: 0;
+    }
+    .instruction {
+      font-size: 13px;
+      color: #6b7280;
+      margin: 8px 0 0;
+      font-weight: 700;
+    }
+    .options {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .option {
+      width: 100%;
+      text-align: left;
+      border: 1px solid #d1d5db;
+      background: #fff;
+      padding: 13px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 15px;
+      color: #111827;
+      transition: transform 0.06s ease, border-color 0.15s ease, background 0.15s ease;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .option:hover:not(.locked) {
+      border-color: #111827;
+      transform: translateY(-1px);
+    }
+    .option input {
+      margin-top: 3px;
+      flex: 0 0 auto;
+    }
+    .option.locked {
+      cursor: default;
+      opacity: 0.98;
+    }
+    .option.correct {
+      border-color: #15803d;
+      background: #dcfce7;
+    }
+    .option.wrong {
+      border-color: #b91c1c;
+      background: #fee2e2;
+    }
+    .option.missed {
+      border-color: #ca8a04;
+      background: #fef9c3;
+    }
+    .feedback {
+      display: none;
+      margin-top: 14px;
+      padding: 13px 14px;
+      border-radius: 12px;
+      font-size: 15px;
+    }
+    .feedback.good {
+      display: block;
+      background: #ecfdf5;
+      border: 1px solid #86efac;
+    }
+    .feedback.bad {
+      display: block;
+      background: #fff1f2;
+      border: 1px solid #fca5a5;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .mainBtn, .secondaryBtn, .checkBtn {
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 15px;
+      padding: 12px 16px;
+    }
+    .mainBtn, .checkBtn {
+      border: 0;
+      background: #111827;
+      color: #fff;
+    }
+    .secondaryBtn {
+      border: 1px solid #d1d5db;
+      background: #fff;
+      color: #111827;
+    }
+    .checkBtn:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+    .result, .categoryPanel {
+      display: none;
+      padding: 24px;
+      margin-top: 20px;
+    }
+    .result.show, .categoryPanel.show {
+      display: block;
+    }
+    .scoreBig {
+      font-size: 38px;
+      font-weight: 900;
+      margin: 0 0 8px;
+    }
+    .note {
+      color: #4b5563;
+      margin: 0;
+    }
+    .breakdown {
+      margin-top: 16px;
+      display: grid;
+      gap: 8px;
+    }
+    .catRow {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 14px;
+    }
+    .catScore {
+      font-weight: 900;
+    }
+    .footer {
+      color: #6b7280;
+      font-size: 13px;
+      margin-top: 22px;
+      text-align: center;
+    }
+    @media (max-width: 640px) {
+      .wrap { padding: 18px 12px 44px; }
+      h1 { font-size: 24px; }
+      .hero, .question, .progressBox, .result, .categoryPanel { padding: 16px; }
+      .qText { font-size: 16px; }
+      .progressText { font-size: 14px; }
+      .scoreBig { font-size: 30px; }
+      .catRow { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>Extremely Advanced Behavioral Health Glossary Quiz</h1>
+      <p class="sub">This is a harder, scenario-based quiz built for client conversations, PPC strategy, insurance quality, VOB logic, and levels-of-care understanding.</p>
+      <div class="pillRow">
+        <span class="pill">50 questions</span>
+        <span class="pill">Scenario-heavy</span>
+        <span class="pill">Single + multi-select</span>
+        <span class="pill">Instant feedback</span>
+        <span class="pill">Category breakdown</span>
+      </div>
+      <div class="controls">
+        <button class="mainBtn" onclick="scrollToFirst()">Start Advanced Quiz</button>
+        <button class="secondaryBtn" onclick="resetQuiz()">Reset</button>
+      </div>
+    </section>
+
+    <section class="progressBox">
+      <div class="progressText">
+        <span id="answeredText">Answered: 0 / 50</span>
+        <span id="scoreText">Score: 0</span>
+      </div>
+      <div class="bar"><div id="barFill"></div></div>
+    </section>
+
+    <main id="quiz"></main>
+
+    <section id="result" class="result">
+      <p class="scoreBig" id="finalScore">Score: 0 / 50</p>
+      <p class="note" id="finalNote"></p>
+      <div class="controls">
+        <button class="mainBtn" onclick="resetQuiz()">Retake Quiz</button>
+      </div>
+    </section>
+
+    <section id="categoryPanel" class="categoryPanel">
+      <h2 style="margin:0 0 8px;">Category Breakdown</h2>
+      <p class="note">Use this to see what to review first.</p>
+      <div id="breakdown" class="breakdown"></div>
+    </section>
+
+    <p class="footer">Created from the Behavioral Health Industry Glossary.</p>
+  </div>
+
+  <script>
+    const questions = [{"category": "Core Industry Logic", "type": "single", "q": "A client says, “We don’t just treat symptoms; we help people change thought patterns, emotional regulation, relationships, and substance-related behaviors.” Which term best captures this broad category?", "options": ["Mental Health Treatment only", "Behavioral Health", "Medication-Assisted Treatment", "Aftercare"], "answer": [1], "explain": "Behavioral Health is the broader umbrella because it includes psychological, emotional, and social well-being, plus the connection between thoughts, feelings, and behaviors."}, {"category": "Core Industry Logic", "type": "single", "q": "A prospect has alcohol dependence as the primary issue and anxiety as the secondary issue. What is the most accurate classification?", "options": ["Private Pay", "Dual Diagnosis / Co-occurring Disorders", "Sober Living", "VOB"], "answer": [1], "explain": "Dual diagnosis means both a substance use disorder and a mental health disorder are present at the same time."}, {"category": "Core Industry Logic", "type": "multi", "q": "Which treatment components could realistically be part of a dual diagnosis treatment approach?", "options": ["Substance abuse counseling", "Medication management", "Psychoeducation", "Relapse prevention strategies", "Ignoring the mental health disorder until sobriety is complete"], "answer": [0, 1, 2, 3], "explain": "Dual diagnosis treatment addresses both disorders concurrently. Counseling, medication management, psychoeducation, and relapse prevention can all fit."}, {"category": "Privacy & Compliance", "type": "single", "q": "A media buyer wants to build a Meta retargeting audience from visitors to an addiction treatment landing page. What is the correct response?", "options": ["Proceed if the audience is over 1,000 people", "Proceed only if names are removed", "Do not use retargeting because addiction treatment is sensitive and HIPAA compliance matters", "Use retargeting only for people with PPO insurance"], "answer": [2], "explain": "The glossary explicitly says retargeting in addiction treatment campaigns is prohibited due to sensitivity and HIPAA compliance."}, {"category": "Privacy & Compliance", "type": "multi", "q": "Which of the following can be PHI if it is individually identifiable and related to health, treatment, or payment?", "options": ["Demographic information", "Medical history", "Insurance information", "Test results", "A generic anonymous blog pageview"], "answer": [0, 1, 2, 3], "explain": "PHI includes identifiable demographic info, medical history, test results, insurance info, and other health-related identifying data."}, {"category": "Privacy & Compliance", "type": "single", "q": "A form asks for full name, phone, insurance provider, diagnosis, and treatment need. From a HIPAA-aware marketing perspective, what is the safest assumption?", "options": ["This is not sensitive because it is only a lead form", "This likely involves PHI and must be handled with strict privacy/security care", "This is only PHI after the person becomes an admitted patient", "It is safe as long as the form is embedded in an ad"], "answer": [1], "explain": "Individually identifiable health and insurance information collected through websites/forms should be treated as sensitive under HIPAA compliance practices."}, {"category": "Platform & Certification", "type": "single", "q": "A new addiction treatment client wants to advertise on Google Ads, Meta, and Microsoft. Which certification is required according to the glossary?", "options": ["COBRA", "LegitScript", "TriWest", "Verify Tx"], "answer": [1], "explain": "LegitScript certification is required for clients who want to advertise addiction treatment services on Meta, Google Ads, or Microsoft."}, {"category": "Payer-Mix & Lead Quality", "type": "single", "q": "A client report shows 55% private insurance, 25% cash pay, 15% Medicaid, and 5% Medicare. What concept is this describing?", "options": ["Continuum of care", "Payer-mix", "Levels of care", "AMA rate"], "answer": [1], "explain": "Payer-mix refers to the composition of payment sources used by patients."}, {"category": "Payer-Mix & Lead Quality", "type": "single", "q": "A lead has no usable insurance but is willing to pay the facility directly. What is this payment type?", "options": ["Private Pay / Cash Pay", "Medicaid", "PPO", "SCA"], "answer": [0], "explain": "Private Pay, also called cash pay, means the person pays directly instead of using insurance."}, {"category": "Insurance Plans", "type": "single", "q": "A lead has a PPO policy. Why is this often more attractive to behavioral health clients than an HMO?", "options": ["PPO usually has more provider flexibility and can include out-of-network options", "PPO always means zero deductible", "PPO is government-funded", "PPO never requires a VOB"], "answer": [0], "explain": "PPO plans allow more flexibility and choice, including out-of-network providers, though costs may vary."}, {"category": "Insurance Plans", "type": "single", "q": "A lead has an HMO and needs referrals from a PCP to see specialists. What should you understand from the glossary?", "options": ["HMO is usually preferred by clients", "HMO usually pays better than PPO", "HMO is more restricted and clients usually prefer PPO plans instead", "HMO is the same as private pay"], "answer": [2], "explain": "The glossary says HMO plans are more restricted and usually clients do not get good payouts from HMO plans compared with PPO."}, {"category": "Insurance Plans", "type": "single", "q": "A lead can only receive coverage if they use providers in the plan’s network, except in emergencies. Referrals are not usually required. Which plan type is this?", "options": ["PPO", "HMO", "EPO", "COBRA"], "answer": [2], "explain": "EPO plans cover care only within the network except emergencies, and typically do not require referrals."}, {"category": "Insurance Plans", "type": "single", "q": "A plan blends HMO and PPO features: using a PCP/network lowers costs, but out-of-network care is possible at higher cost. Which plan is this?", "options": ["POS", "EPO", "Medicaid", "TriWest"], "answer": [0], "explain": "POS insurance is a hybrid of HMO and PPO features."}, {"category": "Insurance Plans", "type": "multi", "q": "Which statements about In-Network vs Out-of-Network are accurate?", "options": ["In-network providers have contracted with the insurance plan", "In-network care usually has lower out-of-pocket costs", "Out-of-network providers do not have a contract with the plan", "Out-of-network care may require higher deductibles, coinsurance, or upfront payment", "Out-of-network always means the provider is illegal"], "answer": [0, 1, 2, 3], "explain": "INN means contracted at negotiated rates. OON means no contract and often higher patient costs or reimbursement steps."}, {"category": "Insurance Plans", "type": "single", "q": "A facility is not in-network, but a rare patient case gets insurance approval to honor PPO-style benefits because no nearby in-network provider can meet the specialty need. What is this?", "options": ["Single Case Agreement", "COBRA", "Medi-Cal carveout", "AMA discharge"], "answer": [0], "explain": "This is a Single Case Agreement, usually rare and tied to a specialty need that in-network providers cannot meet."}, {"category": "Government & Military Coverage", "type": "single", "q": "A lead has California’s Medicaid program. Which term applies?", "options": ["TriWest", "Medi-Cal", "COBRA", "PPO"], "answer": [1], "explain": "Medi-Cal is California’s Medicaid program."}, {"category": "Government & Military Coverage", "type": "single", "q": "Why are Medicaid-insured leads usually not treated as qualified VOBs for most clients in the glossary?", "options": ["Medicaid never covers behavioral health", "Most clients do not accept Medicaid", "Medicaid is the same as private pay", "Medicaid leads are always out-of-state"], "answer": [1], "explain": "The glossary states that most clients do not accept Medicaid, so Medicaid-insured leads are traditionally not qualified as VOBs."}, {"category": "Government & Military Coverage", "type": "single", "q": "Which program primarily serves people aged 65+ and certain younger people with disabilities or end-stage renal disease?", "options": ["Medicare", "Medicaid", "COBRA", "LegitScript"], "answer": [0], "explain": "Medicare is a federal health insurance program primarily for individuals aged 65 and older and certain younger disabled individuals."}, {"category": "Government & Military Coverage", "type": "single", "q": "A client specifically wants veterans, active-duty members, and military families because they have relevant contracts. Which coverage category matters most?", "options": ["TRICARE", "Medi-Cal", "COBRA", "EPO"], "answer": [0], "explain": "TRICARE serves uniformed service members, veterans, retirees, and their families."}, {"category": "Government & Military Coverage", "type": "single", "q": "TriWest is best described as:", "options": ["A private insurance carrier similar to Cigna", "A contractor administering the Tricare West Region health plan", "A type of PPO policy", "A federal law for continuing employer coverage"], "answer": [1], "explain": "TriWest administers the Tricare West Region health plan on behalf of the Department of Defense."}, {"category": "Insurance Continuity", "type": "single", "q": "A person loses their job but may continue group health insurance temporarily at their own expense. Which concept matters?", "options": ["COBRA", "SCA", "POS", "AMA"], "answer": [0], "explain": "COBRA allows eligible employees/dependents to continue group health insurance for a limited period after qualifying events like job loss."}, {"category": "VOB & Admissions", "type": "single", "q": "What is the purpose of a VOB in behavioral health admissions?", "options": ["To confirm eligibility, coverage limits, copays, deductibles, and pre-authorization requirements", "To diagnose the patient", "To automatically admit the patient", "To replace LegitScript certification"], "answer": [0], "explain": "VOB verifies insurance coverage and benefit details before treatment."}, {"category": "VOB & Admissions", "type": "single", "q": "A client’s admissions team runs a quick insurance check using a tool like Verify Tx to identify basic plan information. What is this called in the glossary?", "options": ["Soft VOB", "AMA", "PHP", "SCA"], "answer": [0], "explain": "The glossary describes a 'soft' VOB with tools like Verify Tx to get basic knowledge of the plan."}, {"category": "VOB & Admissions", "type": "single", "q": "A lead has private insurance and the admissions team confirms the plan adequately covers treatment without major financial barriers. What is this?", "options": ["Viable VOB / Approved VOB", "AMA", "Medicaid carveout", "Aftercare"], "answer": [0], "explain": "A Viable VOB means the verification confirms coverage and feasibility for treatment."}, {"category": "VOB & Admissions", "type": "multi", "q": "From a paid media perspective, which outcomes can marketing most directly influence versus admissions owning the close?", "options": ["Generating leads with private insurance", "Generating VOBs", "Generating more viable VOB opportunities", "Guaranteeing admits regardless of admissions team performance", "Improving lead quality through targeting and offer/messaging"], "answer": [0, 1, 2, 4], "explain": "Marketing can influence lead quality, VOB volume, and viable VOB opportunities, but admits depend heavily on the admissions team."}, {"category": "VOB & Admissions", "type": "single", "q": "A campaign produces many form fills, but most are Medicaid and the client does not accept Medicaid. What is the best performance interpretation?", "options": ["Lead volume is high, so the campaign is successful", "The campaign may be generating low-quality leads because they are unlikely to become qualified VOBs", "The campaign should optimize harder for clicks", "Medicaid leads should count as viable VOBs"], "answer": [1], "explain": "If the client does not accept Medicaid, those leads are unlikely to become qualified VOBs, even if form volume looks good."}, {"category": "Admissions & Revenue Risk", "type": "single", "q": "A patient leaves treatment early against clinical recommendation. The facility bills per day and loses expected remaining revenue. What term explains this?", "options": ["AMA", "VOB", "PPO", "PHP"], "answer": [0], "explain": "AMA means Against Medical Advice. Facilities may not get paid for remaining recommended treatment days when patients leave early."}, {"category": "Admissions & Revenue Risk", "type": "single", "q": "The glossary notes AMA discharges are typically from which type of patients?", "options": ["International patients", "Locally-based patients", "Only Medicare patients", "Only private pay patients"], "answer": [1], "explain": "The glossary states that AMA discharges are typically from locally-based patients."}, {"category": "Continuum & Levels of Care", "type": "single", "q": "A provider offers prevention, outpatient therapy, IOP, PHP, residential care, transitional living, and community support with smooth handoffs. What is this?", "options": ["Continuum of Care", "Payer-Mix", "LegitScript", "Private Pay"], "answer": [0], "explain": "Continuum of Care means coordinated services across multiple levels and settings throughout recovery."}, {"category": "Continuum & Levels of Care", "type": "single", "q": "Which level of care involves intensive 24-hour care in a structured environment/home for 30, 60, or even 90 days?", "options": ["Outpatient Treatment", "Inpatient/Residential Treatment", "Telehealth", "Aftercare"], "answer": [1], "explain": "Residential/inpatient treatment involves 24-hour structured care and can last 30, 60, or 90 days."}, {"category": "Continuum & Levels of Care", "type": "multi", "q": "Why can distance/travel be positioned as a selling point for residential treatment?", "options": ["It can separate the person from negative environments, people, and places tied to illness", "Residential facilities can serve people from across the U.S.", "It can support a cleaner recovery environment", "It guarantees no relapse", "It removes the need for admissions"], "answer": [0, 1, 2], "explain": "The glossary frames travel/distance as an advantage because it separates patients from negative local environments and residential facilities can serve people from across the U.S."}, {"category": "Continuum & Levels of Care", "type": "single", "q": "Which care level is often the first step in substance abuse treatment and focuses on physical stabilization and withdrawal management?", "options": ["Detoxification", "Aftercare", "Sober Living", "POS"], "answer": [0], "explain": "Detox removes substances from the body while managing withdrawal in a safe, controlled environment."}, {"category": "Continuum & Levels of Care", "type": "single", "q": "The glossary gives a typical detox duration of:", "options": ["One hour", "Three to eight+ days", "Six months minimum", "Exactly 90 days"], "answer": [1], "explain": "Detox can last from three to eight+ days."}, {"category": "Continuum & Levels of Care", "type": "single", "q": "A person needs intensive therapy and monitoring during the day but can return home or to supportive housing in the evening. Which level fits best?", "options": ["PHP", "Residential", "COBRA", "Private Pay"], "answer": [0], "explain": "PHP provides structured day-long treatment without 24-hour care."}, {"category": "Continuum & Levels of Care", "type": "single", "q": "What is the Florida Model in the glossary?", "options": ["A PHP model with sober living homes nearby; technically residential but cannot be called residential due to licensing", "A Medicaid-only treatment model", "A telehealth-only model", "A Medicare extension plan"], "answer": [0], "explain": "Florida Model refers to PHP with nearby sober living homes, technically residential but not called residential due to licensing."}, {"category": "Continuum & Levels of Care", "type": "single", "q": "Which level of care includes several hours of therapy per day, multiple times per week, while allowing people to live at home or in sober living?", "options": ["IOP", "Detox only", "TRICARE", "LegitScript"], "answer": [0], "explain": "IOP offers structured sessions several hours per day, multiple times weekly, while patients live at home or in supportive environments."}, {"category": "Continuum & Levels of Care", "type": "single", "q": "Which care level is usually more flexible and part-time, often used for mild to moderate conditions?", "options": ["Outpatient Treatment", "Residential Treatment", "Detox", "SCA"], "answer": [0], "explain": "Outpatient treatment provides flexible, part-time therapy and support for mild to moderate conditions."}, {"category": "Telehealth", "type": "single", "q": "A California-licensed behavioral health center wants to provide telehealth to someone in New York. What issue from the glossary matters most?", "options": ["Telehealth licenses are only given at the state level, so services are generally limited to people within the facility’s state", "Telehealth is never allowed for behavioral health", "Telehealth always counts as residential", "Telehealth does not require licensing"], "answer": [0], "explain": "The glossary says behavioral health centers must be licensed for telehealth and licenses are given at the state level."}, {"category": "MAT", "type": "multi", "q": "Which medications are listed as examples used in Medication-Assisted Treatment?", "options": ["Suboxone", "Methadone", "Buprenorphine", "Naltrexone", "Ibuprofen"], "answer": [0, 1, 2, 3], "explain": "The glossary lists suboxone, methadone, buprenorphine, and naltrexone as MAT medications."}, {"category": "MAT", "type": "single", "q": "MAT is best described as:", "options": ["Medication only, with no therapy", "An evidence-based approach combining medication with behavioral therapy and support services", "A type of private insurance", "A residential-only program"], "answer": [1], "explain": "MAT combines FDA-approved medication with behavioral therapy and support services."}, {"category": "Recovery Support", "type": "single", "q": "A person has finished an initial treatment phase and now receives follow-up appointments, support groups, medication management, and housing/vocational support. What is this?", "options": ["Aftercare", "Detox", "SCA", "Payer-mix"], "answer": [0], "explain": "Aftercare supports people after an initial phase of treatment to help them maintain recovery and transition back to daily life."}, {"category": "Recovery Support", "type": "single", "q": "Which setting is a structured, drug-free living environment with rules and peer support?", "options": ["Sober Living", "Soft VOB", "EPO", "LegitScript"], "answer": [0], "explain": "Sober living homes provide a structured, drug-free environment and peer support."}, {"category": "Treatment Positioning", "type": "multi", "q": "Which modalities could fit under holistic treatment according to the glossary?", "options": ["Mindfulness practices", "Yoga", "Art therapy", "Nutrition counseling", "Acupuncture"], "answer": [0, 1, 2, 3, 4], "explain": "Holistic treatment may include mindfulness, meditation, yoga, art therapy, nutrition counseling, exercise therapy, acupuncture, massage, and similar approaches."}, {"category": "PPC Strategy Scenarios", "type": "single", "q": "You are reviewing lead quality. Campaign A has 100 leads, mostly Medicaid. Campaign B has 35 leads, mostly private PPO. The client mainly accepts private insurance/cash. Which is more strategically valuable?", "options": ["Campaign A because volume always wins", "Campaign B because it is more aligned with likely VOB and viable VOB quality", "Neither because only clicks matter", "Campaign A because Medicaid is preferred by most clients"], "answer": [1], "explain": "For these clients, private insurance/PPO leads are usually more valuable than high-volume Medicaid leads that cannot become qualified VOBs."}, {"category": "PPC Strategy Scenarios", "type": "single", "q": "A client asks to optimize reporting around 'admits only.' What is the most accurate expectation to set?", "options": ["Paid media fully controls admits", "Paid media can improve lead quality, VOBs, and viable VOBs, but the admissions team still has to close admits", "Admits are the same as clicks", "VOBs are irrelevant if CPL is low"], "answer": [1], "explain": "Marketing can improve the pipeline quality, but admits depend on admissions operations, follow-up, insurance, patient fit, and close rate."}, {"category": "PPC Strategy Scenarios", "type": "multi", "q": "A high-quality behavioral health lead gen campaign should pay attention to which downstream signals?", "options": ["Private insurance presence", "VOBs", "Viable VOBs", "Admits", "Lead source CPL only, with no qualification data"], "answer": [0, 1, 2, 3], "explain": "CPL alone is not enough. Private insurance, VOBs, viable VOBs, and admits are more meaningful downstream signals."}, {"category": "PPC Strategy Scenarios", "type": "single", "q": "A facility only accepts private insurance and private pay. Which ad/form question would most directly improve lead qualification?", "options": ["What is your favorite color?", "Do you currently have private insurance or plan to pay privately?", "How many times have you seen this ad?", "Do you prefer Instagram or Facebook?"], "answer": [1], "explain": "Asking about private insurance or private pay helps separate potentially qualified leads from insurance types the client does not accept."}, {"category": "PPC Strategy Scenarios", "type": "single", "q": "A marketer wants to mention 'we accept most insurance' for a client that mainly accepts PPO and cash pay but usually does not accept Medicaid/Medicare. What is the risk?", "options": ["It may attract many unqualified government-insured leads and create expectation mismatch", "It will automatically increase viable VOBs", "It is always the safest wording", "It removes the need for VOB"], "answer": [0], "explain": "Broad insurance messaging can pull in Medicaid/Medicare/HMO leads that may not match the client's accepted payer-mix."}, {"category": "PPC Strategy Scenarios", "type": "multi", "q": "A landing page for addiction treatment collects sensitive lead information. Which actions are strategically safer?", "options": ["Use HIPAA-conscious forms and data handling", "Avoid addiction-treatment retargeting", "Limit unnecessary sensitive fields", "Treat identifiable insurance/health data as sensitive", "Upload raw diagnosis-based lead lists into ad platforms for retargeting"], "answer": [0, 1, 2, 3], "explain": "HIPAA/privacy care, avoiding retargeting, minimizing sensitive data, and treating identifiable health/insurance info as sensitive are safer."}, {"category": "Advanced Scenario", "type": "single", "q": "A lead has BCBS PPO, lives out of state, and is considering residential treatment away from home. What is the strongest strategic read?", "options": ["Potentially strong: private PPO plus residential can serve people from across the U.S., and distance may be a selling point", "Weak: out-of-state leads can never enter residential care", "Weak: PPO is not accepted by most clients", "Irrelevant: insurance and level of care do not matter"], "answer": [0], "explain": "Private PPO is often preferred, and residential treatment can serve people from across the U.S.; distance from negative environments can be positioned as a benefit."}, {"category": "Advanced Scenario", "type": "single", "q": "A local lead with low readiness enters residential care but leaves early AMA. Which business problem does this create?", "options": ["It can reduce revenue because billing is per day and the facility may not get paid for remaining recommended days", "It creates a guaranteed SCA", "It means the lead was automatically a viable VOB", "It proves the campaign generated no value"], "answer": [0], "explain": "AMA discharges can hurt revenue because the facility may not get paid for the remaining recommended treatment days."}, {"category": "Advanced Scenario", "type": "single", "q": "A person needs support after rehab, wants to live in a drug-free environment, and benefits from peer accountability. What is the best fit?", "options": ["Sober Living", "Detox", "Soft VOB", "Payer-Mix"], "answer": [0], "explain": "Sober living homes provide structured, drug-free housing with rules and peer support."}, {"category": "Advanced Scenario", "type": "single", "q": "A client wants to advertise 'residential' in a PHP + nearby sober living model, but licensing does not allow it to be called residential. What model does this resemble?", "options": ["Florida Model", "COBRA", "EPO", "Medi-Cal"], "answer": [0], "explain": "The glossary describes the Florida Model as PHP with nearby sober living homes — technically residential but not called residential due to licensing."}, {"category": "Advanced Scenario", "type": "multi", "q": "A 'best lead' for many clients in this glossary would likely include which traits?", "options": ["Private insurance", "PPO or strong out-of-network benefits", "Willingness/readiness to enter treatment", "Potential to become a viable VOB", "Only Medicaid with no private pay option"], "answer": [0, 1, 2, 3], "explain": "Many clients want private insurance/cash pay, especially PPO/OON potential, plus readiness and viable VOB potential."}, {"category": "Advanced Scenario", "type": "single", "q": "A client asks, 'Why did we get 80 leads but only 5 admits?' Which explanation is most aligned with the glossary?", "options": ["Every lead should become an admit if ads are good", "There are multiple filters: insurance type, VOB, viable VOB, clinical fit, readiness, and admissions close", "The answer is always bad creative", "Admits happen before VOB"], "answer": [1], "explain": "Lead volume does not equal admits. Behavioral health has several qualification and admissions stages."}, {"category": "Advanced Scenario", "type": "multi", "q": "Which terms are directly tied to insurance/payment qualification rather than clinical level of care?", "options": ["Payer-Mix", "Private Pay", "VOB", "Viable VOB", "PHP"], "answer": [0, 1, 2, 3], "explain": "Payer-mix, private pay, VOB, and viable VOB are payment/insurance qualification terms. PHP is a clinical level of care."}, {"category": "Advanced Scenario", "type": "multi", "q": "Which terms are levels or settings within the care journey rather than insurance plan types?", "options": ["Residential Treatment", "Detox", "PHP", "IOP", "PPO"], "answer": [0, 1, 2, 3], "explain": "Residential, detox, PHP, and IOP are treatment levels/settings. PPO is an insurance plan type."}];
+    const quizEl = document.getElementById('quiz');
+    const answeredText = document.getElementById('answeredText');
+    const scoreText = document.getElementById('scoreText');
+    const barFill = document.getElementById('barFill');
+    const resultEl = document.getElementById('result');
+    const finalScoreEl = document.getElementById('finalScore');
+    const finalNoteEl = document.getElementById('finalNote');
+    const categoryPanel = document.getElementById('categoryPanel');
+    const breakdownEl = document.getElementById('breakdown');
+
+    let answers = Array(questions.length).fill(null);
+
+    function renderQuiz() {
+      quizEl.innerHTML = '';
+      questions.forEach((item, index) => {
+        const card = document.createElement('section');
+        card.className = 'question';
+        card.id = 'q' + (index + 1);
+
+        const header = document.createElement('div');
+        header.className = 'questionHeader';
+
+        const num = document.createElement('div');
+        num.className = 'num';
+        num.textContent = index + 1;
+
+        const qBlock = document.createElement('div');
+        qBlock.className = 'qBlock';
+
+        const cat = document.createElement('span');
+        cat.className = 'category';
+        cat.textContent = item.category;
+
+        const qText = document.createElement('p');
+        qText.className = 'qText';
+        qText.textContent = item.q;
+
+        const instruction = document.createElement('p');
+        instruction.className = 'instruction';
+        instruction.textContent = item.type === 'multi' ? 'Choose all that apply.' : 'Choose one best answer.';
+
+        qBlock.appendChild(cat);
+        qBlock.appendChild(qText);
+        qBlock.appendChild(instruction);
+        header.appendChild(num);
+        header.appendChild(qBlock);
+
+        const options = document.createElement('div');
+        options.className = 'options';
+
+        item.options.forEach((option, optionIndex) => {
+          const label = document.createElement('label');
+          label.className = 'option';
+          label.dataset.optionIndex = optionIndex;
+
+          const input = document.createElement('input');
+          input.type = item.type === 'multi' ? 'checkbox' : 'radio';
+          input.name = 'question-' + index;
+          input.value = optionIndex;
+          input.onchange = () => handleSelectionChange(index);
+
+          const span = document.createElement('span');
+          span.textContent = option;
+
+          label.appendChild(input);
+          label.appendChild(span);
+
+          if (item.type === 'single') {
+            label.onclick = (e) => {
+              if (answers[index] !== null) return;
+              if (e.target.tagName.toLowerCase() !== 'input') {
+                input.checked = true;
+              }
+              answerSingle(index, optionIndex);
+            };
+            input.onclick = () => answerSingle(index, optionIndex);
+          }
+
+          options.appendChild(label);
+        });
+
+        card.appendChild(header);
+        card.appendChild(options);
+
+        if (item.type === 'multi') {
+          const controls = document.createElement('div');
+          controls.className = 'controls';
+          const check = document.createElement('button');
+          check.className = 'checkBtn';
+          check.textContent = 'Check Answer';
+          check.id = 'check-' + index;
+          check.disabled = true;
+          check.onclick = () => answerMulti(index);
+          controls.appendChild(check);
+          card.appendChild(controls);
+        }
+
+        const feedback = document.createElement('div');
+        feedback.className = 'feedback';
+        feedback.id = 'feedback-' + index;
+        card.appendChild(feedback);
+
+        quizEl.appendChild(card);
+      });
+      updateProgress();
+    }
+
+    function handleSelectionChange(index) {
+      const check = document.getElementById('check-' + index);
+      if (!check || answers[index] !== null) return;
+      const selected = getSelected(index);
+      check.disabled = selected.length === 0;
+    }
+
+    function answerSingle(index, selectedIndex) {
+      if (answers[index] !== null) return;
+      answers[index] = [selectedIndex];
+      lockAndGrade(index);
+      advance(index);
+    }
+
+    function answerMulti(index) {
+      if (answers[index] !== null) return;
+      const selected = getSelected(index);
+      if (selected.length === 0) return;
+      answers[index] = selected;
+      lockAndGrade(index);
+      advance(index);
+    }
+
+    function getSelected(index) {
+      const card = document.getElementById('q' + (index + 1));
+      return Array.from(card.querySelectorAll('input:checked')).map(input => Number(input.value)).sort((a,b) => a-b);
+    }
+
+    function arraysEqual(a, b) {
+      if (!a || !b || a.length !== b.length) return false;
+      for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+      return true;
+    }
+
+    function lockAndGrade(index) {
+      const item = questions[index];
+      const selected = answers[index].slice().sort((a,b) => a-b);
+      const correct = item.answer.slice().sort((a,b) => a-b);
+      const isCorrect = arraysEqual(selected, correct);
+      const card = document.getElementById('q' + (index + 1));
+      const labels = card.querySelectorAll('.option');
+      const inputs = card.querySelectorAll('input');
+      const feedback = document.getElementById('feedback-' + index);
+      const check = document.getElementById('check-' + index);
+
+      inputs.forEach(input => input.disabled = true);
+      labels.forEach(label => {
+        label.classList.add('locked');
+        const idx = Number(label.dataset.optionIndex);
+        const wasSelected = selected.includes(idx);
+        const shouldBe = correct.includes(idx);
+
+        if (shouldBe && wasSelected) label.classList.add('correct');
+        else if (shouldBe && !wasSelected) label.classList.add('missed');
+        else if (!shouldBe && wasSelected) label.classList.add('wrong');
+      });
+
+      if (check) check.disabled = true;
+
+      if (isCorrect) {
+        feedback.className = 'feedback good';
+        feedback.innerHTML = '<strong>Correct.</strong> ' + escapeHtml(item.explain);
+      } else {
+        const answerText = correct.map(i => item.options[i]).join('; ');
+        feedback.className = 'feedback bad';
+        feedback.innerHTML = '<strong>Not quite.</strong> Correct answer: <strong>' + escapeHtml(answerText) + '</strong><br>' + escapeHtml(item.explain);
+      }
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const answered = answers.filter(a => a !== null).length;
+      const correct = answers.reduce((sum, ans, idx) => sum + (arraysEqual(ans, questions[idx].answer.slice().sort((a,b)=>a-b)) ? 1 : 0), 0);
+
+      answeredText.textContent = 'Answered: ' + answered + ' / ' + questions.length;
+      scoreText.textContent = 'Score: ' + correct;
+      barFill.style.width = (answered / questions.length * 100) + '%';
+
+      if (answered === questions.length) {
+        resultEl.classList.add('show');
+        categoryPanel.classList.add('show');
+        finalScoreEl.textContent = 'Score: ' + correct + ' / ' + questions.length;
+        const percent = Math.round((correct / questions.length) * 100);
+        let note = '';
+        if (percent >= 92) note = 'Elite. You can speak about this document confidently in client conversations.';
+        else if (percent >= 82) note = 'Strong. Review the missed edge cases, especially insurance and VOB logic.';
+        else if (percent >= 70) note = 'Good base, but not client-call sharp yet. Review payer-mix, VOBs, and levels of care.';
+        else if (percent >= 55) note = 'You understand the basics, but the advanced strategy connections need more work.';
+        else note = 'Retake after reviewing the glossary. Focus first on insurance types, VOBs, HIPAA, and care levels.';
+        finalNoteEl.textContent = percent + '% — ' + note;
+        renderBreakdown();
+      } else {
+        resultEl.classList.remove('show');
+        categoryPanel.classList.remove('show');
+      }
+    }
+
+    function renderBreakdown() {
+      const cats = {};
+      questions.forEach((q, idx) => {
+        if (!cats[q.category]) cats[q.category] = { total: 0, correct: 0 };
+        cats[q.category].total += 1;
+        if (arraysEqual(answers[idx], q.answer.slice().sort((a,b)=>a-b))) cats[q.category].correct += 1;
+      });
+      breakdownEl.innerHTML = '';
+      Object.keys(cats).sort().forEach(cat => {
+        const row = document.createElement('div');
+        row.className = 'catRow';
+        const left = document.createElement('div');
+        left.textContent = cat;
+        const right = document.createElement('div');
+        right.className = 'catScore';
+        const c = cats[cat];
+        right.textContent = c.correct + ' / ' + c.total + ' (' + Math.round(c.correct / c.total * 100) + '%)';
+        row.appendChild(left);
+        row.appendChild(right);
+        breakdownEl.appendChild(row);
+      });
+    }
+
+    function advance(index) {
+      const next = document.getElementById('q' + (index + 2));
+      if (next) {
+        setTimeout(() => next.scrollIntoView({ behavior: 'smooth', block: 'start' }), 450);
+      } else {
+        setTimeout(() => resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 450);
+      }
+    }
+
+    function resetQuiz() {
+      answers = Array(questions.length).fill(null);
+      renderQuiz();
+      resultEl.classList.remove('show');
+      categoryPanel.classList.remove('show');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToFirst() {
+      const first = document.getElementById('q1');
+      if (first) first.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    renderQuiz();
+  </script>
+</body>
+</html>
